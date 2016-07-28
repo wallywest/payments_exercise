@@ -7,15 +7,18 @@ RSpec.describe PaymentsController, type: :controller do
     let(:loan) { Loan.create!(funded_amount: 100.0) }
 
     it "should return a list of payments for loan" do
-      Payment.create!(amount: 1.0, loan_id: loan.id)
-      Payment.create!(amount: 2.0, loan_id: loan.id)
+      payA = Payment.create!(amount: 1.0, loan_id: loan.id)
+      payB = Payment.create!(amount: 2.0, loan_id: loan.id)
 
       get :index, loan_id: loan.id
 
       expect(response).to have_http_status(:ok)
       list = JSON.parse(response.body)
+
       expect(list.size).to eql(2)
-      expect(list).to eql([])
+      expect(list.first.keys).to include("id", "loan_id", "amount", "created_at")
+      expect(list.first["id"]).to eql(payA.id)
+      expect(list.last["id"]).to eql(payB.id)
     end
 
     context "loan not found" do
@@ -36,7 +39,8 @@ RSpec.describe PaymentsController, type: :controller do
 
       expect(response).to have_http_status(:ok)
       resource = JSON.parse(response.body)
-      expect(resource).to eql({})
+      expect(resource.keys).to include("id","loan_id", "amount","created_at")
+      expect(resource["id"]).to eql(payment.id)
     end
 
     context "loan not found" do 
@@ -62,7 +66,8 @@ RSpec.describe PaymentsController, type: :controller do
   describe "#create" do
     context 'if the loan is not found' do
       it 'responds with a 404' do
-        post :create, loan_id: 100000
+        post :create, loan_id: 100000, payment: {amount: "1.00"}
+
         expect(response).to have_http_status(:not_found)
       end
     end
@@ -111,8 +116,12 @@ RSpec.describe PaymentsController, type: :controller do
       post :create, loan_id: loan.id, payment: {amount: 1.0}
 
       expect(response).to have_http_status(201)
-      payment = JSON.parse(response.body)
-      expect(payment).to eql({})
+      resource = JSON.parse(response.body)
+
+      payment = loan.payments.last
+
+      expect(resource["id"]).to eql(payment.id)
+      expect(resource["amount"]).to eql(payment.amount.to_s)
     end
   end
 

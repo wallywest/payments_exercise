@@ -1,14 +1,6 @@
 class Loan < ActiveRecord::Base
   has_many :payments
 
-  def add_payment(payment)
-    if valid_payment?(payment)
-      payments << payment
-    else
-      errors.add(:invalid_payment, "unable to add payment to loan")
-    end
-  end
-
   def valid_payment?(payment)
     payment.valid? && (new_balance(payment) <= funded_amount)
   end

@@ -5,7 +5,9 @@ class LoansController < ApplicationController
   end
 
   def index
-    render json: Loan.all
+    loans = Loan.all
+
+    render json: loans, each_serializer: LoanSerializer
   end
 
   def show

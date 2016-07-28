@@ -1,4 +1,6 @@
 class Payment < ActiveRecord::Base
+  has_one :loan
+
   validates :amount, presence: true
   validate :validate_sign_and_zero
 

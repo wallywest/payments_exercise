@@ -11,11 +11,15 @@ RSpec.describe LoansController, type: :controller do
       loanA = Loan.create!(funded_amount: 100.0)
       loanB = Loan.create!(funded_amount: 200.0)
 
+      serializedA = {id: loanA.id, funded_amount: loanA.funded_amount.to_s, outstanding_balance: loanA.funded_amount.to_s, payments: []}.with_indifferent_access
+      serializedB = {id: loanB.id, funded_amount: loanB.funded_amount.to_s, outstanding_balance: loanB.funded_amount.to_s, payments: []}.with_indifferent_access
+
       get :index
 
       list = JSON.parse(response.body)
       expect(list.size).to eql(2)
-      expect(list).to eql([])
+      expect(list).to include(serializedA)
+      expect(list).to include(serializedB)
     end
   end
 
@@ -29,9 +33,10 @@ RSpec.describe LoansController, type: :controller do
 
     it "responds with the loan" do
       get :show, id: loan.id
-      loan = JSON.parse(response.body)
+      body = JSON.parse(response.body)
 
-      expect(loan).to eql({})
+      serializedA = {id: loan.id, funded_amount: loan.funded_amount.to_s, outstanding_balance: loan.funded_amount.to_s, payments: []}.with_indifferent_access
+      expect(body).to eql(serializedA)
     end
 
     context 'if the loan is not found' do
