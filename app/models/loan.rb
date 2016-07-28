@@ -9,10 +9,6 @@ class Loan < ActiveRecord::Base
     funded_amount - existing_balance
   end
 
-  def api_error(code: 500)
-    {error: "", error_description: "", status_code: code}
-  end
-
   private 
 
   def new_balance(payment)

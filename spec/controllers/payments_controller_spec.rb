@@ -7,8 +7,8 @@ RSpec.describe PaymentsController, type: :controller do
     let(:loan) { Loan.create!(funded_amount: 100.0) }
 
     it "should return a list of payments for loan" do
-      payA = Payment.create!(amount: 1.0, loan_id: loan.id)
-      payB = Payment.create!(amount: 2.0, loan_id: loan.id)
+      payA = Payment.create!(amount: 100.0, loan_id: loan.id)
+      payB = Payment.create!(amount: 200.0, loan_id: loan.id)
 
       get :index, loan_id: loan.id
 
@@ -33,7 +33,7 @@ RSpec.describe PaymentsController, type: :controller do
   describe '#show' do
     it "should return a payment" do
       loan = Loan.create!(funded_amount: 100.0)
-      payment = Payment.create!(amount: 1.0, loan_id: loan.id)
+      payment = Payment.create!(amount: 100.0, loan_id: loan.id)
 
       get :show, id: payment.id , loan_id: loan.id
 
@@ -44,7 +44,7 @@ RSpec.describe PaymentsController, type: :controller do
     end
 
     context "loan not found" do 
-      let(:payment) { Payment.create!(amount: 1.0) }
+      let(:payment) { Payment.create!(amount: 100.0) }
 
       it 'responds with a 404' do
         get :show, id: payment.id, loan_id: 10000
@@ -66,7 +66,7 @@ RSpec.describe PaymentsController, type: :controller do
   describe "#create" do
     context 'if the loan is not found' do
       it 'responds with a 404' do
-        post :create, loan_id: 100000, payment: {amount: "1.00"}
+        post :create, loan_id: 100000, payment: {amount: "100.0"}
 
         expect(response).to have_http_status(:not_found)
       end
@@ -113,7 +113,7 @@ RSpec.describe PaymentsController, type: :controller do
     it "should create a payment for the loan" do 
       loan = Loan.create!(funded_amount: 100.0)
 
-      post :create, loan_id: loan.id, payment: {amount: 1.0}
+      post :create, loan_id: loan.id, payment: {amount: 100.0}
 
       expect(response).to have_http_status(201)
       resource = JSON.parse(response.body)
